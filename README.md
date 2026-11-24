@@ -1,0 +1,9 @@
+# Value Study Studio
+
+An art warm-up about seeing lightness through hue. Choose the darkest, middle and lightest of three named colors. The studio computes relative luminance locally, identifies the first reversed pair, and shows the measured order. A Firebase AI Logic coach can turn that specific comparison into a painting exercise. The default request is device-only. Choosing hybrid explicitly allows cloud fallback. The displayed inference source comes from the SDK response.
+
+Use Node 22.12 or later. Run `npm ci`, `npm test`, then `npm run dev` or `npm run build`. The four original palettes and scoring work without a Firebase account. Choose Lantern, Plum, Canopy for a deliberate error in the first study. Try again with Plum, Canopy, Lantern.
+
+For an isolated judging environment, enable Firebase AI Logic with the Gemini Developer API, register a web app and configure Firebase App Check with reCAPTCHA Enterprise for its judging domain. Supply the site's public web configuration in the untracked file `public/judge-config.json` with keys `firebaseConfig` (the web app configuration object) and `appCheckSiteKey` (the public Enterprise site key). Keep all service credentials and production configuration out of source and submission materials. Serve the production build over HTTPS. Use a supported Chrome installation with the on-device model ready. Record one successful device-only exercise and one cloud exercise with their SDK-reported routes before claiming either ran. On failure the app reports the failure and retains the learner's measured result.
+
+[Firebase hybrid web setup](https://firebase.google.com/docs/ai-logic/hybrid/web/get-started) · [Inference source and modes](https://firebase.google.com/docs/ai-logic/hybrid/web/configuration-options) · [Competition rules](https://firebasehybridaihackathon.devpost.com/rules)

@@ -1,0 +1,16 @@
+{
+  "name": "value-study-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --test studio.test.js"
+  },
+  "dependencies": {
+    "firebase": "13.4.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.7"
+  }
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Value Study Studio</title>
+    <link rel="stylesheet" href="./studio.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Value Study Studio</h1>
+        <p>
+          Look past the hue. Tap the three swatches from darkest to lightest.
+        </p>
+      </header>
+      <section aria-labelledby="study">
+        <h2 id="study"></h2>
+        <div id="swatches"></div>
+        <p id="reply" role="status" aria-live="polite"></p>
+        <div class="actions">
+          <button id="undo">Undo pick</button
+          ><button id="retry">Try again</button
+          ><button id="next">Next palette</button>
+        </div>
+      </section>
+      <section id="coaching" hidden>
+        <h2>At the easel</h2>
+        <p id="measured"></p>
+        <div id="proof" aria-label="Measured swatches in grayscale"></div>
+        <label for="mode">Where to run the AI coach</label>
+        <select id="mode">
+          <option value="device">On device only</option>
+          <option value="hybrid">On device, with cloud fallback</option>
+          <option value="cloud">In the cloud</option>
+        </select>
+        <button id="ask">Get a painting exercise</button>
+        <p id="advice" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script type="module" src="./ui.js"></script>
+  </body>
+</html>

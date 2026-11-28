@@ -20,7 +20,7 @@
 
 The observed hosted script URL was `https://value-study-studio.vercel.app/assets/index-Bsh8Za4o.js`. No provider revision attestation was available. The new candidate has not been deployed or browser-tested; do not transfer the hosted baseline observations to the candidate.
 
-The Arsenal Firebase account displayed a welcome/setup page without an existing project. The Brick Bruce account displayed Firebase's mandatory two-step verification gate. The inspected CAGE credential manifest listed no Firebase/App Check configuration. The local public configuration check returned exit code 2 (blocked). These checks do not establish that no project exists elsewhere.
+Both inspected Firebase accounts displayed a welcome/setup page without an existing Firebase project. The Brick Bruce account initially displayed a two-step verification gate, which cleared on a later read. Its Google Cloud project picker listed `Default Gemini Project`; adding Firebase would change that existing project and was not performed. The inspected CAGE credential manifest listed no Firebase/App Check configuration. The local public configuration check returned exit code 2 (blocked). These checks do not establish that no project exists elsewhere.
 
 ## Repairs prepared
 
@@ -33,8 +33,8 @@ The Arsenal Firebase account displayed a welcome/setup page without an existing 
 
 ## Remaining steps
 
-1. Account owner completes Firebase's required two-step verification for the owning account.
-2. Identify an existing authorized isolated project/web app, AI Logic setup, App Check provider and matching HTTPS origin, or an existing authorized local debug token. Creating resources, registering new debug access, changing origins or billing needs specific approval.
+1. Approve the prepared, unsubmitted `Value Study Studio Judging` project proposal (proposed ID `value-study-studio-judging`) with a web app, AI Logic and App Check on a no-billing Spark plan, including the Firebase terms step; or identify an existing isolated judging project.
+2. Obtain its authorized web configuration, App Check provider and matching HTTPS origin, or an existing authorized local debug token. Creating resources, registering new debug access, changing origins or billing needs specific approval. Optional Developer Program signup is off; no terms were accepted.
 3. Run the candidate in that authorized Chrome environment, capture real `ON_DEVICE` and `IN_CLOUD` responses, then check the actual hybrid outcome. Retain failures and the original evidence export.
 4. Review the development-only App Check path before any merge/release. Self-review and targeted regressions are recorded; no separate development reviewer or provider approval is claimed.
 

@@ -34,8 +34,19 @@
           <option value="hybrid">On device, with cloud fallback</option>
           <option value="cloud">In the cloud</option>
         </select>
-        <button id="ask">Get a painting exercise</button>
+        <button id="prepare">Prepare AI coach</button>
+        <button id="ask" disabled>Get a painting exercise</button>
         <p id="advice" role="status" aria-live="polite"></p>
+        <details>
+          <summary>Judging evidence</summary>
+          <p>Palette scoring is calculated locally. AI results below record the requested mode and the source reported by Firebase.</p>
+          <button id="export" disabled>Download inference evidence</button>
+          <button id="copy-evidence" disabled>Copy inference evidence</button>
+          <button id="device-check">Check device readiness</button>
+          <pre id="device-status" aria-live="polite"></pre>
+          <pre id="evidence" aria-live="polite">No AI requests recorded in this session.</pre>
+          <pre id="evidence-json" aria-label="Inference evidence JSON"></pre>
+        </details>
       </section>
     </main>
     <script type="module" src="./ui.js"></script>

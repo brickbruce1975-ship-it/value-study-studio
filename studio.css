@@ -106,3 +106,5 @@ label {
 #proof span {
   flex: 1;
 }
+details { margin-top: 1rem; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; }

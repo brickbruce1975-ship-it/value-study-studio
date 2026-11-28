@@ -1,3 +1,6 @@
 node_modules/
 dist/
 public/judge-config.json
+.env*.local
+judging-evidence/
+__pycache__/

@@ -11,10 +11,18 @@ let preparedCoach;
 const byId = (id) => document.getElementById(id);
 const environment = () => ({ origin: location.origin, userAgent: navigator.userAgent, secureContext: isSecureContext });
 const failureCode = (error) => typeof error?.code === "string" && /^[a-z\d/_-]{1,100}$/i.test(error.code) ? error.code : "unclassified";
+const failureDetail = (error) => String(error?.message ?? "No error detail reported.")
+  .replace(/AIza[\w-]+/g, "[public web setting omitted]")
+  .replace(/eyJ[\w.-]{30,}/g, "[authentication data omitted]")
+  .replace(/[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}/gi, "[identifier omitted]")
+  .replace(/https?:\/\/[^\s"')]+/g, "[request URL omitted]").slice(0, 1200);
+const evidencePayload = () => ({ schema: "value-study-studio.inference-evidence.v1", buildId, true_rsi: false, true_agi: false, evidenceClass: "BROWSER_OBSERVATIONS_REQUIRING_REVIEW", attempts });
 function recordAttempt(attempt) {
   attempts.push(attempt);
   byId("export").disabled = false;
-  byId("evidence").textContent = attempts.map((entry) => `${entry.startedAt} · ${entry.requestedMode} · ${entry.status} · SDK source: ${entry.sdkRoute ?? "unreported"}`).join("\n");
+  byId("copy-evidence").disabled = false;
+  byId("evidence").textContent = attempts.map((entry) => `${entry.startedAt} · ${entry.requestedMode} · ${entry.status} · SDK source: ${entry.sdkRoute ?? "unreported"}${entry.failureCode ? " · " + entry.failureCode : ""}`).join("\n");
+  byId("evidence-json").textContent = JSON.stringify(evidencePayload(), null, 2);
 }
 let active = 0,
   guess = [],
@@ -126,9 +134,9 @@ byId("prepare").onclick = async () => {
     }
   } catch (error) {
     recordAttempt({ stage: "preparation", requestedMode: mode, startedAt, finishedAt: new Date().toISOString(), buildId, palette,
-      status: "preparation_failed", sdkRoute: null, failureCode: failureCode(error), environment: environment(), true_rsi: false, true_agi: false });
+      status: "preparation_failed", sdkRoute: null, failureCode: failureCode(error), failureDetail: failureDetail(error), environment: environment(), true_rsi: false, true_agi: false });
     if (version === generation)
-      byId("advice").textContent = "Coach setup unavailable. Check the judging Firebase configuration, App Check and network. The measured palette result is still available.";
+      byId("advice").textContent = "Coach setup unavailable. " + failureDetail(error);
   } finally {
     if (version === generation) {
       byId("prepare").disabled = false;
@@ -153,7 +161,12 @@ byId("ask").onclick = async () => {
   byId("mode").disabled = true;
   byId("advice").textContent = "Requesting an exercise…";
   try {
-    const answer = await generate(prompt);
+    const answer = await generate(prompt, (event) => {
+      if (version !== generation) return;
+      if (event.stage === "model_download" && Number.isFinite(event.progress))
+        byId("advice").textContent = `Downloading the on-device model: ${Math.round(event.progress * 100)}%.`;
+      else byId("advice").textContent = event.stage === "device_initialization" ? "Initializing the on-device model. A first download can take several minutes…" : "Generating the painting exercise…";
+    });
     Object.assign(attempt, { status: "response_received", sdkRoute: answer.route, message: answer.message });
     if (version === generation)
       byId("advice").textContent =
@@ -161,9 +174,9 @@ byId("ask").onclick = async () => {
         " · SDK inference source: " +
         (answer.route ?? "unreported");
   } catch (error) {
-    Object.assign(attempt, { status: "failed", sdkRoute: null, failureCode: failureCode(error) });
+    Object.assign(attempt, { status: "failed", sdkRoute: null, failureCode: failureCode(error), failureDetail: failureDetail(error) });
     if (version === generation)
-      byId("advice").textContent = "Coach unavailable. No AI result was verified. Check model readiness, Firebase and App Check, then try again.";
+      byId("advice").textContent = "Coach unavailable. " + failureDetail(error);
   } finally {
     Object.assign(attempt, { finishedAt: new Date().toISOString(), elapsedMs: Math.round(performance.now() - started), shownForCurrentPalette: version === generation });
     recordAttempt(attempt);
@@ -175,12 +188,27 @@ byId("ask").onclick = async () => {
   }
 };
 byId("export").onclick = () => {
-  const payload = { schema: "value-study-studio.inference-evidence.v1", buildId, true_rsi: false, true_agi: false, evidenceClass: "BROWSER_OBSERVATIONS_REQUIRING_REVIEW", attempts };
+  const payload = evidencePayload();
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
   const link = document.createElement("a");
   link.href = url;
   link.download = "value-study-studio-inference-evidence.json";
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+byId("copy-evidence").onclick = async () => {
+  await navigator.clipboard.writeText(JSON.stringify(evidencePayload(), null, 2));
+};
+byId("device-check").onclick = async () => {
+  const result = { ...environment(), checkedAt: new Date().toISOString(), promptApiExposed: typeof window.LanguageModel !== "undefined" };
+  byId("device-status").textContent = "Checking the browser's supported Prompt API…";
+  try {
+    if (result.promptApiExposed) result.availability = await window.LanguageModel.availability();
+    else result.availability = "API_NOT_EXPOSED";
+  } catch (error) {
+    result.failureCode = failureCode(error);
+    result.failureDetail = failureDetail(error);
+  }
+  byId("device-status").textContent = JSON.stringify(result, null, 2);
 };
 render();

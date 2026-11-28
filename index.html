@@ -41,7 +41,11 @@
           <summary>Judging evidence</summary>
           <p>Palette scoring is calculated locally. AI results below record the requested mode and the source reported by Firebase.</p>
           <button id="export" disabled>Download inference evidence</button>
+          <button id="copy-evidence" disabled>Copy inference evidence</button>
+          <button id="device-check">Check device readiness</button>
+          <pre id="device-status" aria-live="polite"></pre>
           <pre id="evidence" aria-live="polite">No AI requests recorded in this session.</pre>
+          <pre id="evidence-json" aria-label="Inference evidence JSON"></pre>
         </details>
       </section>
     </main>

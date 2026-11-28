@@ -2,10 +2,13 @@
   "name": "value-study-studio",
   "private": true,
   "type": "module",
+  "engines": { "node": ">=24.12.0" },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "node --test studio.test.js"
+    "test": "node --test studio.test.js coach-session.test.js judge-config.test.js",
+    "check:config": "node scripts/check-config.js",
+    "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
     "firebase": "13.4.0"

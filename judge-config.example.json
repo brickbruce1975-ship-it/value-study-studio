@@ -1,0 +1,11 @@
+{
+  "firebaseConfig": {
+    "apiKey": "REPLACE_WITH_PUBLIC_FIREBASE_WEB_API_KEY",
+    "authDomain": "REPLACE_WITH_PROJECT_ID.firebaseapp.com",
+    "projectId": "REPLACE_WITH_ISOLATED_JUDGING_PROJECT_ID",
+    "storageBucket": "REPLACE_WITH_PUBLIC_WEB_CONFIG_VALUE",
+    "messagingSenderId": "REPLACE_WITH_PUBLIC_WEB_CONFIG_VALUE",
+    "appId": "REPLACE_WITH_PUBLIC_FIREBASE_WEB_APP_ID"
+  },
+  "appCheckSiteKey": "REPLACE_WITH_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY"
+}

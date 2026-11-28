@@ -9,6 +9,8 @@ import {
   GoogleAIBackend,
   InferenceMode,
 } from "firebase/ai";
+import { createCoachSession } from "./coach-session.js";
+import { validateJudgeConfig } from "./judge-config.js";
 
 let pendingService;
 async function configureService() {
@@ -23,18 +25,14 @@ async function configureService() {
       "The AI coach needs a judging Firebase project. The palette exercise works here."
     );
   }
-  const { firebaseConfig, appCheckSiteKey } = await response.json();
-  if (
-    !firebaseConfig?.apiKey ||
-    !firebaseConfig?.projectId ||
-    !firebaseConfig?.appId ||
-    !appCheckSiteKey
-  ) {
-    throw new Error(
-      "The project configuration needs a Firebase web app and an App Check site key."
-    );
-  }
+  const { firebaseConfig, appCheckSiteKey } = validateJudgeConfig(await response.json());
   const app = initializeApp(firebaseConfig);
+  // An existing private debug token is usable only in a local development build.
+  // Production builds eliminate this branch. Never safelist localhost in reCAPTCHA.
+  if (import.meta.env.DEV && ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname)) {
+    const debugToken = import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+    if (debugToken) self.FIREBASE_APPCHECK_DEBUG_TOKEN = debugToken;
+  }
   initializeAppCheck(app, {
     provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,
@@ -52,7 +50,7 @@ function loadService() {
   return pendingService;
 }
 
-export async function coach(prompt, mode) {
+export async function prepareCoach(mode) {
   if (!["device", "cloud", "hybrid"].includes(mode))
     throw new Error("Choose an inference mode.");
   const modes = {
@@ -61,9 +59,5 @@ export async function coach(prompt, mode) {
     hybrid: InferenceMode.PREFER_ON_DEVICE,
   };
   const model = getGenerativeModel(await loadService(), { mode: modes[mode] });
-  if (mode === "device") await model.initializeDeviceModel();
-  const { response } = await model.generateContent(prompt);
-  const message = response.text().trim();
-  if (!message) throw new Error("The coach returned no exercise. Try again.");
-  return { message, route: response.inferenceSource };
+  return createCoachSession(model, mode);
 }
